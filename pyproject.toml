@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "asyncsession-fastapi-sqlalchemy"
+version = "0.1.0"
+description = ""
+authors = ["VasiliySilver <s555133@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlalchemy = "^2.0.22"
+fastapi = "^0.103.2"
+uvicorn = "^0.23.2"
+asyncpg = "^0.28.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
