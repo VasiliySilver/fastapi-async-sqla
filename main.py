@@ -9,10 +9,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
 
+from starlette_admin.contrib.sqla import Admin, ModelView
+
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
 # Создание асинхронного движка SQLAlchemy
 engine = create_async_engine(DATABASE_URL)
+
+admin = Admin(engine)
 
 # Создание асинхронной сессии
 async_session = async_sessionmaker(engine, expire_on_commit=False)
@@ -32,7 +36,11 @@ class User(Base):
     email = Column(String, unique=True, index=True)
 
 
+admin.add_view(ModelView(User))
+
 app = FastAPI()
+
+admin.mount_to(app)
 
 
 class UserBase(BaseModel):
@@ -83,7 +91,7 @@ async def fetch_users():
 @app.get("/users/{user_id}/", response_model=UserCreate)
 async def read_user(user_id: int):
     async with async_session() as session:
-        stmt = select(User).filter(User.id == user_id)
+        stmt = select(User).filter(User.id is user_id)
         result = await session.execute(stmt)
         user = result.scalars().first()
         if not user:
@@ -120,5 +128,5 @@ if __name__ == "__main__":
         "main:app",
         host="127.0.0.1",
         reload=True,
-        port=8000,
+        port=8001,
     )
